@@ -1,0 +1,5 @@
+{
+
+    "mocha.files.glob": "lib/test/*.js",
+    "git.ignoreLimitWarning": true
+}

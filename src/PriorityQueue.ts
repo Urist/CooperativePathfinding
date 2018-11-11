@@ -1,13 +1,20 @@
 
 export class PriorityQueue<T>
 {
-    _data:T[];
-    _comparator:(a:T,b:T) => boolean;
+    private _data:(T)[];
+    private _elements:number;
+    private _comparator:(a:T,b:T) => boolean;
 
-    constructor (comparator = (a:T, b:T) => a > b)
+    constructor (comparator = (a:T, b:T) => a >= b)
     {
         this._data = [];
+        this._elements = 0;
         this._comparator = comparator;
+    }
+
+    get length():number
+    {
+        return this._elements;
     }
 
     Insert (newElement:T)
@@ -22,68 +29,89 @@ export class PriorityQueue<T>
             {
                 this._data[pos] = newElement;
                 newPosition = pos;
+                break;
             }
         }
 
+        // Add the new item
+        this._data[newPosition] = newElement;
+
         // Heapify up
         var parentPos = this._parent(newPosition);
-        while (parentPos)
+        var currentPos = newPosition;
+        while (parentPos !== undefined)
         {
-            if (this._comparator(this._data[parentPos], this._data[newPosition]))
+            if (!this._comparator(this._data[parentPos], this._data[currentPos]))
             {
-                var tmp = this._data[parentPos];
-                this._data[newPosition] = this._data[parentPos];
-                this._data[parentPos] = tmp;
+                this._sawp(parentPos, currentPos);
             }
             else
             {
                 break;
             }
-            parentPos = this._parent(newPosition);
+            currentPos = parentPos;
+            parentPos = this._parent(currentPos);
         }
+        this._elements++;
     }
 
     Remove ():T
     {
+        if(this._data.length === 0)
+        {
+            throw "Remove called on empty queue";
+        }
+
         var returnElement = this._data[0];
+        delete this._data[0];
+        var pos = 0;
 
         // Heapify down
         while (true)
         {
-            var pos = 0;
+            var lv = this._leftVal(pos);
+            var rv = this._rightVal(pos);
+            var lp = this._left(pos);
+            var rp = this._right(pos);
 
-            if (!this._leftVal(pos))
+            if (rv === undefined && lv === undefined)
             {
-                // Right might exist, move it up and we're done
-                this._data[pos] = this._rightVal(pos);
+                // No children, nothing to do
                 break;
             }
-
-            if (!this._rightVal(pos))
+            else if (rv !== undefined && lv === undefined)
             {
-                // Left might exists, move it up and we're done
-                this._data[pos] = this._leftVal(pos);
-                break;
+                // Right exists, move it up and check for children
+                this._sawp(pos, rp);
+                pos = rp;
             }
-
-            // Left and right both exist, choose one to move up then check it's children
-            if (this._comparator(this._leftVal(pos), this._rightVal(pos)))
+            else if (rv === undefined && lv !== undefined)
             {
-                this._data[pos] = this._rightVal(pos);
-                pos = this._right(pos);
+                // Left exists, move it up and check for children
+                this._sawp(pos, lp);
+                pos = lp;
             }
-            else
+            else 
             {
-                this._data[pos] = this._leftVal(pos);
-                pos = this._left(pos);
+                // Left and right both exist, choose one to move up then check it's children
+                if (!this._comparator(lv, rv))
+                {
+                    this._sawp(pos, rp);
+                    pos = rp;
+                }
+                else
+                {
+                    this._sawp(pos, lp);
+                    pos = lp;
+                }
             }
         }
-
+        this._elements--;
         return returnElement;
     }
 
     // Helpers
-    _parent (position:number):number|undefined
+    private _parent (position:number):number|undefined
     {
         if (position === 0) { return undefined; }
 
@@ -96,13 +124,19 @@ export class PriorityQueue<T>
         }
     }
 
-    _val (position:number):T { return this._data[position]; }
+    private _val (position:number):T { return this._data[position]; }
 
-    _left (position:number):number { return 2 * position + 1; }
+    private _left (position:number):number { return 2 * position + 1; }
 
-    _leftVal (position:number):T { return this._data[this._left(position)]; }
+    private _leftVal (position:number):T { return this._data[this._left(position)]; }
 
-    _right (position:number):number { return 2 * position + 2; }
+    private _right (position:number):number { return 2 * position + 2; }
 
-    _rightVal (position:number):T { return this._data[this._right(position)]; }
+    private _rightVal (position:number):T { return this._data[this._right(position)]; }
+
+    private _sawp (p1:number, p2:number):void
+    {
+        // Use array destructuring to swap the two elements
+        [this._data[p1],this._data[p2]] = [this._data[p2],this._data[p1]];
+    }
 }

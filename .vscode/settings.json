@@ -1,5 +1,8 @@
 {
 
     "mocha.files.glob": "lib/test/*.js",
+    "mocha.options": {
+        "timeout": 250
+    },
     "git.ignoreLimitWarning": true
 }

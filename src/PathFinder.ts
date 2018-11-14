@@ -6,7 +6,7 @@ export interface IPosition
   GetHuristicDistance(to:IPosition): number;
   GetAdjacent(): Array<IPosition>;
   Equals(other:IPosition): boolean;
-  ToString(): string;
+  toString(): string;
 }
 
 export class Pathfinder

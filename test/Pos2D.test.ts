@@ -19,13 +19,13 @@ describe('Pos2D Tests', function() {
   });
 
   it('ToString', function() {
-    assert.strictEqual(p0a.ToString(), '(0,0)');
-    assert.strictEqual(p1.ToString(), '(1,1)');
-    assert.strictEqual(p2.ToString(), '(3,4)');
+    assert.strictEqual(p0a.toString(), '(0,0)');
+    assert.strictEqual(p1.toString(), '(1,1)');
+    assert.strictEqual(p2.toString(), '(3,4)');
   });
 
   it('GetAdjacent', function() {
     assert.strictEqual(p0a.GetAdjacent().length, 0);
-    assert.strictEqual(p1.GetAdjacent().join(), '(0,0)(0,1)(0,2)(1,0)(1,2)(2,0)(2,1)(2,2)');
+    assert.strictEqual(p1.GetAdjacent().join(''), '(0,0)(0,1)(0,2)(1,0)(1,2)(2,0)(2,1)(2,2)');
   });
 });

@@ -15,21 +15,19 @@ export class Pathfinder
   {
     // [DistanceToGoal, Position]
     let UnexploredNodes:PriorityQueue<[number,IPosition]> = new PriorityQueue<[number,IPosition]>(
-      (a,b) => { return a[0] >= b[0] }
+      (a,b) => { return a[0] <= b[0] }
     );
     // [Position, Parent]
     var ExpoloredNodes = new Dictionary<IPosition,IPosition>();
 
     let CurrentNode:IPosition;
+    let PreviousNode:IPosition;
 
     // Setup initial state
     UnexploredNodes.Insert([from.GetHuristicDistance(to), from]);
 
     do {
       CurrentNode = UnexploredNodes.Remove()[1];
-
-      if(CurrentNode.Equals(to))
-        break; // Done!
       
       // Enumerate adjactent nodes and add them to the queue if they haven't been seen before
       CurrentNode.GetAdjacent().forEach(
@@ -38,11 +36,14 @@ export class Pathfinder
           if(ExpoloredNodes.containsKey(x) === false)
           {
             UnexploredNodes.Insert([x.GetHuristicDistance(to), x]);
+            ExpoloredNodes.setValue(CurrentNode, PreviousNode);
           }
         }
       );
 
-    } while (true);
+      PreviousNode = CurrentNode;
+
+    } while (CurrentNode.Equals(to) === false);
 
     let Path:Array<IPosition> = new Array();
     Path.push(CurrentNode);
@@ -53,7 +54,7 @@ export class Pathfinder
       Path.push(CurrentNode);
     }
 
-    return Path;
+    return Path.reverse();
   }
 }
 

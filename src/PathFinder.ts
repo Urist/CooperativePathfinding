@@ -18,28 +18,36 @@ export class Pathfinder
       (a,b) => { return a[0] <= b[0] }
     );
     // [Position, Parent]
-    var ExpoloredNodes = new Dictionary<IPosition,IPosition>();
+    var ExpoloredNodes = new Dictionary<IPosition,IPosition|undefined>();
 
     let CurrentNode:IPosition;
-    let PreviousNode:IPosition;
+    let PreviousNode:IPosition|undefined;
 
     // Setup initial state
     UnexploredNodes.Insert([from.GetHuristicDistance(to), from]);
 
     do {
+      // If there are no more nodes to explore, fail to find a path
+      if (UnexploredNodes.length === 0)
+      {
+        throw `No path from ${from} to ${to}`;        
+      }
+
+      // Get next node to explore
       CurrentNode = UnexploredNodes.Remove()[1];
       
-      // Enumerate adjactent nodes and add them to the queue if they haven't been seen before
+      // Enumerate adjacent nodes and add them to the queue if they haven't been seen before
       CurrentNode.GetAdjacent().forEach(
         (x) =>
         {
           if(ExpoloredNodes.containsKey(x) === false)
           {
             UnexploredNodes.Insert([x.GetHuristicDistance(to), x]);
-            ExpoloredNodes.setValue(CurrentNode, PreviousNode);
           }
         }
       );
+
+      ExpoloredNodes.setValue(CurrentNode, PreviousNode);
 
       PreviousNode = CurrentNode;
 

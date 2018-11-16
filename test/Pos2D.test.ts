@@ -1,12 +1,42 @@
 import { assert } from 'chai';
-import { Pos2D } from '../src/Pos2D';
+import { Pos2D, Map } from '../src/Pos2D';
 
 describe('Pos2D Tests', function() {
 
-  let p0a = new Pos2D(0, 0, 0, 0);
-  let p0b = new Pos2D(0, 0, 0, 0);
-  let p1 = new Pos2D(1, 1, 2, 2);
-  let p2 = new Pos2D(3, 4, 5, 5);
+    let map11 = new Map(
+        [
+            [true]
+        ]
+    );
+
+    let map33 = new Map(
+        [
+            [true, true, true],
+            [true, true, true],
+            [true, true, true]
+        ]
+    );
+
+    let map51 = new Map(
+        [
+            [true, true, true, true, true]
+        ]
+    );
+
+    let map55 = new Map(
+        [
+            [true, false, true, true, true],
+            [true, false, true, false, true],
+            [true, false, true, true, true],
+            [true, false, true, false, true],
+            [true, true, true, false, true]
+        ]
+    );
+
+  let p0a = new Pos2D(0, 0, map11);
+  let p0b = new Pos2D(0, 0, map11);
+  let p1 = new Pos2D(1, 1, map33);
+  let p2 = new Pos2D(3, 4, map55);
 
   it('Equals', function() {
     assert.isTrue(p0a.Equals(p0b));

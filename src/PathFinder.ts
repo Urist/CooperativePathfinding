@@ -54,11 +54,15 @@ export class Pathfinder
     // Trace back from CurrentNode to find the path
     let Path:Array<IPosition> = new Array();
     let pathNode:IPosition|undefined = CurrentNode;
+    
     do {
       Path.push(pathNode);
+
       pathNode = ExpoloredNodes.getValue(pathNode); // Checked containsKey, so assert getValue is safe with '!'
-    } while (pathNode !== undefined && pathNode !== from)
-    Path.push(from);
+      
+      if (pathNode === undefined || pathNode === from)
+        break;
+    } while (ExpoloredNodes.containsKey(pathNode))
 
     return Path.reverse();
   }

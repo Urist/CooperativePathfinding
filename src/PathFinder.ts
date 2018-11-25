@@ -21,7 +21,6 @@ export class Pathfinder
     var ExpoloredNodes = new Dictionary<IPosition,IPosition|undefined>();
 
     let CurrentNode:IPosition;
-    let PreviousNode:IPosition|undefined;
 
     // Setup initial state
     UnexploredNodes.Insert([from.GetHuristicDistance(to), from]);
@@ -43,24 +42,23 @@ export class Pathfinder
           if(ExpoloredNodes.containsKey(x) === false)
           {
             UnexploredNodes.Insert([x.GetHuristicDistance(to), x]);
+            // It isn't actually explored yet, but being on UnexploredNodes gaurentees
+            //   that it will get explored so it is safe to treat it as such.
+            ExpoloredNodes.setValue(x, CurrentNode);
           }
         }
       );
 
-      ExpoloredNodes.setValue(CurrentNode, PreviousNode);
-
-      PreviousNode = CurrentNode;
-
     } while (CurrentNode.Equals(to) === false);
 
-    let Path:Array<IPosition> = new Array();
-    Path.push(CurrentNode);
-
     // Trace back from CurrentNode to find the path
-    while (ExpoloredNodes.containsKey(CurrentNode)) {
-      CurrentNode = ExpoloredNodes.getValue(CurrentNode)!; // Checked containsKey, so assert getValue is safe with '!'
-      Path.push(CurrentNode);
-    }
+    let Path:Array<IPosition> = new Array();
+    let pathNode:IPosition|undefined = CurrentNode;
+    do {
+      Path.push(pathNode);
+      pathNode = ExpoloredNodes.getValue(pathNode); // Checked containsKey, so assert getValue is safe with '!'
+    } while (pathNode !== undefined && pathNode !== from)
+    Path.push(from);
 
     return Path.reverse();
   }

@@ -43,7 +43,31 @@ describe('PathFinder Tests', function() {
     
     var path = pf.FindPath(from, to);
 
-    assert.equal(path.join('->'), '(0,0)->(1,0)->(2,0)->(3,0)->(4,0)');
+    assert.equal(path.join('->'), '(0,0)->(1,0)->(2,0)->(3,0)->(4,1)->(3,2)->(2,3)->(3,4)->(4,4)');
+  });
+
+  it('Impossible path fails pathing', function() {
+    var pf = new Pathfinder();
+
+    let map55 = new Map(
+      [
+        [true, false, true, true, true],
+        [true, false, true, false, true],
+        [true, false, true, true, true],
+        [true, false, true, false, true],
+        [true, true, true, false, true]
+      ]
+    );
+
+    var from = new Pos2D(4, 4, map55);
+    var to = new Pos2D(-1, -1, map55);
+    
+    try {
+      var path = pf.FindPath(from, to);
+      assert.fail(path); // What path did it find???
+    } catch (error) {
+      assert.isTrue(true); // Impossible path is expected to throw
+    }
   });
 });
 

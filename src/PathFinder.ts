@@ -18,7 +18,7 @@ export class Pathfinder
       (a,b) => { return a[0] <= b[0] }
     );
     // [Position, Parent]
-    var ExpoloredNodes = new Dictionary<IPosition,IPosition|undefined>();
+    var ExpoloredNodes = new Dictionary<IPosition,IPosition>();
 
     let CurrentNode:IPosition;
 
@@ -56,13 +56,11 @@ export class Pathfinder
     let pathNode:IPosition|undefined = CurrentNode;
     
     do {
-      Path.push(pathNode);
-
-      pathNode = ExpoloredNodes.getValue(pathNode); // Checked containsKey, so assert getValue is safe with '!'
       
-      if (pathNode === undefined || pathNode === from)
-        break;
-    } while (ExpoloredNodes.containsKey(pathNode))
+      Path.push(pathNode);
+      pathNode = ExpoloredNodes.getValue(pathNode);
+
+    } while (pathNode !== undefined && pathNode !== from && ExpoloredNodes.containsKey(pathNode))
 
     return Path.reverse();
   }

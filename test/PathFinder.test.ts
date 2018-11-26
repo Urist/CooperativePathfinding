@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { Pathfinder } from '../src/PathFinder';
+import { Pathfinder, SearchState } from '../src/PathFinder';
 import { Pos2D, Map } from '../src/Pos2D';
 
 describe('PathFinder Tests', function() {
@@ -80,5 +80,11 @@ describe('PathFinder Tests', function() {
     } catch (error) {
       assert.isTrue(true); // Impossible path is expected to throw
     }
+  });
+});
+
+describe('SearchState Tests', function() {
+  it('TODO: Write SearchState tests', function() {
+    assert.fail();
   });
 });

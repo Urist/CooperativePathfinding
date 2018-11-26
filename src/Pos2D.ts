@@ -23,6 +23,7 @@ export class Pos2D implements IPosition
         adj.push(new Pos2D(this.x - 1, this.y, this.map));
         adj.push(new Pos2D(this.x - 1, this.y + 1, this.map));
         adj.push(new Pos2D(this.x, this.y - 1, this.map));
+        adj.push(new Pos2D(this.x, this.y, this.map));
         adj.push(new Pos2D(this.x, this.y + 1, this.map));
         adj.push(new Pos2D(this.x + 1, this.y - 1, this.map));
         adj.push(new Pos2D(this.x + 1, this.y, this.map));

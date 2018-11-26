@@ -55,7 +55,7 @@ describe('Pos2D Tests', function() {
   });
 
   it('GetAdjacent', function() {
-    assert.strictEqual(p0a.GetAdjacent().length, 0);
-    assert.strictEqual(p1.GetAdjacent().join(''), '(0,0)(0,1)(0,2)(1,0)(1,2)(2,0)(2,1)(2,2)');
+    assert.strictEqual(p0a.GetAdjacent().length, 1);
+    assert.strictEqual(p1.GetAdjacent().join(''), '(0,0)(0,1)(0,2)(1,0)(1,1)(1,2)(2,0)(2,1)(2,2)');
   });
 });

@@ -9,6 +9,114 @@ export interface IPosition
   toString(): string;
 }
 
+export class Agent
+{
+  // Agent class is immutable
+  constructor(
+    readonly id:number,
+    readonly location:IPosition,
+    readonly destination:IPosition
+  ) {}
+
+  toString():string
+  {
+    return `Agent${this.id}`;
+  }
+}
+
+enum StateType
+{
+  Intermeditate,
+  Standard,
+}
+
+// Exported for testing purposes
+export class SearchState
+{
+  // SearchState class is immutable
+  constructor(
+		readonly timestep:number,
+		readonly state:StateType,
+		readonly agentMoveList:Dictionary<Agent, IPosition|null>
+  ) {}
+
+  MakeNextState(movingAgent:Agent, move:IPosition)
+  {
+    if (this.agentMoveList.containsKey(movingAgent) === false)
+      throw `SearchState Agent list does not contains ${movingAgent}`;
+
+    if (this.agentMoveList.getValue(movingAgent) !== null)
+      throw `SearchState attempted to re-assign move to ${movingAgent}`;
+
+    var unassignedAgents =
+      this.agentMoveList.keys().filter( (k) => this.agentMoveList.getValue(k) === null );
+    
+    if (unassignedAgents.length === 1)
+    {
+      // Including the move passed in, all agents have moves assigned
+      // Therefore the new state will be a Standard state
+
+      // Make extra sure that the unassigned agent is actually the one that is being moved
+      if (unassignedAgents[0] !== movingAgent)
+        throw `Expected unassigned agent to be ${movingAgent}, but it was ${unassignedAgents[0]}`;
+
+      // Create a new Agent list with each agent moved to it's target position
+      var newAgentList:Dictionary<Agent, IPosition|null> = new Dictionary();
+      this.agentMoveList.forEach(
+        (k, v) =>
+        {
+          if (v === null)
+            throw `Found null move for ${k} when generating Standard state`;
+
+          newAgentList.setValue(
+            new Agent(k.id, v, k.destination),
+            null
+          );
+        }
+      );
+      // Don't forget to execute the passed in move
+      newAgentList.setValue(
+        new Agent(movingAgent.id, move, movingAgent.destination),
+        null
+      );
+
+      return new SearchState(
+        this.timestep + 1,
+        StateType.Standard,
+        newAgentList
+      );
+
+    }
+    else
+    {
+      // This is still an Intermediate state
+
+      // Create a copy of the Agent list
+      var newAgentList:Dictionary<Agent, IPosition|null> = new Dictionary();
+      this.agentMoveList.forEach(
+        (k, v) =>
+        {
+          newAgentList.setValue(
+            k, // A new agent is generated when it moves, so we can reuse this one
+            v
+          );
+        }
+      );
+      // Don't forget to save to added move
+      newAgentList.setValue(
+        new Agent(movingAgent.id, move, movingAgent.destination),
+        null
+      );
+
+      return new SearchState(
+        this.timestep,
+        StateType.Intermeditate,
+        newAgentList
+      );
+    }
+  }
+}
+
 export class Pathfinder
 {
   FindPath(from:IPosition, to:IPosition): Array<IPosition>

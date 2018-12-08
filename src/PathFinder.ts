@@ -26,6 +26,19 @@ export class Agent
     return new Agent(this.id, target, this.destination);
   }
 
+  equals(other:Agent): boolean
+  {
+    if (this.id === other.id)
+    {
+      if (this.destination.Equals(other.destination) === false)
+      {
+        throw new Error('Encountered Agents with same id but different destinations');
+      }
+      return true;
+    }
+    return false;
+  }
+
   toString():string
   {
     return `Agent${this.id}`;

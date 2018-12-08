@@ -8,6 +8,8 @@ export interface IPosition
   GetAdjacent(): Array<IPosition>;
   Equals(other:IPosition): boolean;
   toString(): string;
+
+  Intersection(line1:[IPosition,IPosition],line2:[IPosition,IPosition]): boolean;
 }
 
 export class Agent
@@ -143,7 +145,23 @@ export class SearchState
 
   GetHeuristicDistance(): number
   {
-    throw 'SearchState::GetHeuristicDistance not implemented';
+    let HeuristicValue:number = 0;
+
+    this.agentMoveList.forEach(
+      (agent, assignedMove) =>
+      {
+        if (assignedMove !== null)
+        {
+          HeuristicValue += assignedMove.GetHeuristicDistance(agent.destination);
+        }
+        else
+        {
+          HeuristicValue += agent.location.GetHeuristicDistance(agent.destination);
+        }
+      }
+    );
+
+    return HeuristicValue;
   }
 
   private _isCollidingMove(testAgent:Agent, testMove:IPosition):boolean
@@ -153,20 +171,22 @@ export class SearchState
     this.agentMoveList.forEach(
       (otherAgent, otherMove) =>
       {
-        // Swapping positions is not allowed
-        if (testAgent.location.Equals(otherMove) && otherAgent.location.Equals(testMove))
+        // If neither agent has a moved assigned, anything is allowed
+        if (otherMove !== null)
         {
-          isCollidingMove = true;
-          return false;
+          // Test if moves would swap or cross
+          if (testMove.Intersection([testAgent.location, testMove], [otherAgent.location, otherMove]))
+          {
+            isCollidingMove = true;
+            return false;
+          }
+          // Moving into the space occupied by an agent that is 'wait'ing is not allowed
+          if (testMove.Equals(otherAgent.location) && otherAgent.location.Equals(otherMove))
+          {
+            isCollidingMove = true;
+            return false;
+          }
         }
-        // Moving into the space occupied by an agent that is 'wait'ing is not allowed
-        if (testMove.Equals(otherAgent.location) && otherAgent.location.Equals(otherMove))
-        {
-          isCollidingMove = true;
-          return false;
-        }
-        // Diagonal crossings are not allowed
-        throw new Error('_isCollidingMove diagonal crossing check not implemented');
       }
     );
 

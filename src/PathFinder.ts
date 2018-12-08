@@ -1,16 +1,9 @@
 import { PriorityQueue } from './PriorityQueue';
 import { Dictionary } from 'typescript-collections';
 
-/*
-TODO: Restrict agent movement (stop them walking through each other)
-TODO: Calculate huristic for SearchState
-TODO: Replace manual moving of agents with Agent::moveTo()
-REFACTOR: Create a SearchState inferface?
-*/
-
 export interface IPosition
 {
-  GetHuristicDistance(to:IPosition): number;
+  GetHeuristicDistance(to:IPosition): number;
   GetAdjacent(): Array<IPosition>;
   Equals(other:IPosition): boolean;
   toString(): string;
@@ -142,9 +135,9 @@ export class SearchState
     }
   }
 
-  GetHuristicDistance(): number
+  GetHeuristicDistance(): number
   {
-    throw 'SearchState::GetHuristicDistance not implemented';
+    throw 'SearchState::GetHeuristicDistance not implemented';
   }
 
   GetAdjacent(): Array<SearchState>
@@ -184,7 +177,7 @@ export class Pathfinder
     let CurrentNode:SearchState;
 
     // Setup initial state
-    UnexploredNodes.Insert([startState.GetHuristicDistance(), startState]);
+    UnexploredNodes.Insert([startState.GetHeuristicDistance(), startState]);
 
     do {
       // If there are no more nodes to explore, fail to find a path
@@ -202,7 +195,7 @@ export class Pathfinder
         {
           if(ExploredNodes.containsKey(x) === false)
           {
-            UnexploredNodes.Insert([x.GetHuristicDistance(), x]);
+            UnexploredNodes.Insert([x.GetHeuristicDistance(), x]);
             // It isn't actually explored yet, but being on UnexploredNodes gaurentees
             //   that it will get explored so it is safe to treat it as such.
             ExploredNodes.setValue(x, CurrentNode);
@@ -212,7 +205,7 @@ export class Pathfinder
 
     } while (CurrentNode.Equals(endState) === false);
 
-    // Trace back from CurrentNode to find the path
+    // Trace back from CurrentNode to find final path through the search space
     let Path:Array<SearchState> = new Array();
     let pathNode:SearchState|undefined = CurrentNode;
     
@@ -223,13 +216,25 @@ export class Pathfinder
 
     } while (pathNode !== undefined && pathNode !== startState && ExploredNodes.containsKey(pathNode))
 
-    var standardStateList = Path.filter( (s) => s.state === StateType.Standard );
+    // Filter out Intermediate states, they are not used in creating the final path
+    var standardStateList = Path.filter( (s) => s.state === StateType.Standard ).reverse();
 
-    let agentPathList = new Dictionary<Agent, Array<IPosition>>();
+    let finalAgentPathMap = new Dictionary<Agent, Array<IPosition>>();
 
-    // TODO: Extract agent paths from search states
+    // Initialize the data structure to be returned
+    standardStateList[0].agentMoveList.forEach(
+      (agent, _) => finalAgentPathMap.setValue(agent, new Array<IPosition>())
+    );
 
-    return Path.reverse();
+    // Go through each state and add each agents position to their final path
+    standardStateList.forEach(
+      (s) => s.agentMoveList.forEach(
+        (agent, _) => 
+          finalAgentPathMap.getValue(agent)!.push(agent.location)
+      )
+    );
+
+    return finalAgentPathMap;
   }
 
   FindPath(from:IPosition, to:IPosition): Array<IPosition>
@@ -244,7 +249,7 @@ export class Pathfinder
     let CurrentNode:IPosition;
 
     // Setup initial state
-    UnexploredNodes.Insert([from.GetHuristicDistance(to), from]);
+    UnexploredNodes.Insert([from.GetHeuristicDistance(to), from]);
 
     do {
       // If there are no more nodes to explore, fail to find a path
@@ -262,7 +267,7 @@ export class Pathfinder
         {
           if(ExploredNodes.containsKey(x) === false)
           {
-            UnexploredNodes.Insert([x.GetHuristicDistance(to), x]);
+            UnexploredNodes.Insert([x.GetHeuristicDistance(to), x]);
             // It isn't actually explored yet, but being on UnexploredNodes gaurentees
             //   that it will get explored so it is safe to treat it as such.
             ExploredNodes.setValue(x, CurrentNode);

@@ -43,9 +43,9 @@ describe('Pos2D Tests', function() {
     assert.isFalse(p0a.Equals(p1));
   });
 
-  it('GetHuristicDistance', function() {
-    assert.strictEqual(p0a.GetHuristicDistance(p0b), 0);
-    assert.strictEqual(p0a.GetHuristicDistance(p2), 5);
+  it('GetHeuristicDistance', function() {
+    assert.strictEqual(p0a.GetHeuristicDistance(p0b), 0);
+    assert.strictEqual(p0a.GetHeuristicDistance(p2), 5);
   });
 
   it('ToString', function() {

@@ -9,7 +9,7 @@ export class Pos2D implements IPosition
 {
     constructor( readonly x:number, readonly y:number, readonly map:Map ) {}
 
-    GetHuristicDistance(to:Pos2D): number
+    GetHeuristicDistance(to:Pos2D): number
     {
         return Math.sqrt( (this.x - to.x) ** 2 + (this.y - to.y) ** 2 );
     }

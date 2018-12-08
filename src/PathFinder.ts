@@ -1,5 +1,6 @@
 import { PriorityQueue } from './PriorityQueue';
 import { Dictionary } from 'typescript-collections';
+import { DictionaryMap2ToArray } from './Utility';
 
 export interface IPosition
 {
@@ -26,6 +27,11 @@ export class Agent
   toString():string
   {
     return `Agent${this.id}`;
+  }
+
+  verboseToString():string
+  {
+    return `{${this.id}, ${this.location}, ${this.destination}}`;
   }
 }
 
@@ -140,19 +146,81 @@ export class SearchState
     throw 'SearchState::GetHeuristicDistance not implemented';
   }
 
+  private _isCollidingMove(testAgent:Agent, testMove:IPosition):boolean
+  {
+    let isCollidingMove:boolean = false;
+
+    this.agentMoveList.forEach(
+      (otherAgent, otherMove) =>
+      {
+        // Swapping positions is not allowed
+        if (testAgent.location.Equals(otherMove) && otherAgent.location.Equals(testMove))
+        {
+          isCollidingMove = true;
+          return false;
+        }
+        // Moving into the space occupied by an agent that is 'wait'ing is not allowed
+        if (testMove.Equals(otherAgent.location) && otherAgent.location.Equals(otherMove))
+        {
+          isCollidingMove = true;
+          return false;
+        }
+        // Diagonal crossings are not allowed
+        throw new Error('_isCollidingMove diagonal crossing check not implemented');
+      }
+    );
+
+    return isCollidingMove;
+  }
+
   GetAdjacent(): Array<SearchState>
   {
-    throw 'SearchState::GetAdjacent not implemented';
+    var resultList = new Array<SearchState>();
+
+    // Each 'adjacent' state has one agent moved
+    // Only agents without a move assigned in the current state can move though
+    // so generate a new state for each non-colliding move each unassigned agent could make
+    this.agentMoveList.forEach(
+      (agent, assignment) =>
+      {
+        // Skip un-assigned agents (Dictionary doesn't support filter sadly)
+        if (assignment === undefined)
+        {
+          agent.location
+          .GetAdjacent()
+          .filter(
+            (newPos) => this._isCollidingMove(agent, newPos) === false
+          )
+          .forEach(
+            (newPos) => resultList.push(this.MakeNextState(agent, newPos))
+          );
+        }
+      }
+    );
+
+    return resultList;
+
   }
 
   Equals(other:SearchState): boolean
   {
-    throw 'SearchState::Equals not implemented';
+    // Deep Equals, checks all fields for equality
+    // AgentMoveList keys match all match using the Dictionary type's equality 
+    // check for keys and strict equals for values 
+    return this.timestep === other.timestep
+      && this.state === other.timestep
+      && DictionaryMap2ToArray(this.agentMoveList, other.agentMoveList,
+        (_, va, vb) => va === vb
+      ).every( (v) => v );
   }
 
   toString(): string
   {
-    throw 'SearchState::toString not implemented';
+    var agentString = this.agentMoveList.keys().map(
+      (k) => `{${k.verboseToString} => ${this.agentMoveList.getValue(k)}}`
+    );
+
+    return `{${this.timestep}, ${this.state}, (${agentString.join('), (')})}`;
   }
 
 }
@@ -230,6 +298,8 @@ export class Pathfinder
     standardStateList.forEach(
       (s) => s.agentMoveList.forEach(
         (agent, _) => 
+          // Test cases validate that consecutive SearchState instances have the same agent list
+          // making use of '!' here safe
           finalAgentPathMap.getValue(agent)!.push(agent.location)
       )
     );

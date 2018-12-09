@@ -216,8 +216,8 @@ export class SearchState
     this.agentMoveList.forEach(
       (agent, assignment) =>
       {
-        // Skip un-assigned agents (Dictionary doesn't support filter sadly)
-        if (assignment === undefined)
+        // Skip assigned agents (Dictionary doesn't support filter sadly)
+        if (assignment === null)
         {
           agent.location
           .GetAdjacent()
@@ -241,7 +241,7 @@ export class SearchState
     // AgentMoveList keys match all match using the Dictionary type's equality 
     // check for keys and strict equals for values 
     return this.timestep === other.timestep
-      && this.state === other.timestep
+      && this.state === other.state
       && DictionaryMap2ToArray(this.agentMoveList, other.agentMoveList,
         (_, va, vb) => va === vb
       ).every( (v) => v );
@@ -249,8 +249,8 @@ export class SearchState
 
   toString(): string
   {
-    var agentString = this.agentMoveList.keys().map(
-      (k) => `{${k.verboseToString} => ${this.agentMoveList.getValue(k)}}`
+    let agentString:string[] = this.agentMoveList.keys().map(
+      (k) => `${k.verboseToString()} => ${this.agentMoveList.getValue(k)}`
     );
 
     return `{${this.timestep}, ${this.state}, (${agentString.join('), (')})}`;

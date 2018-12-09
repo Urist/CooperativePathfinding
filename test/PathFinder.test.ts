@@ -327,8 +327,8 @@ describe('SearchState - Multi Agent, GetHeuristicDistance', function() {
   var start2 = new Pos2D(0,1,map22);
   var end2 = new Pos2D(1,1,map22);
 
-  var a1 = new Agent(0, start1, end1);
-  var a2 = new Agent(1, start2, end2);
+  var a1 = new Agent(1, start1, end1);
+  var a2 = new Agent(2, start2, end2);
 
   it('Value is 0 at final position', function() {
 
@@ -342,8 +342,8 @@ describe('SearchState - Multi Agent, GetHeuristicDistance', function() {
 
   it('Value is >0 at non-final position', function() {
 
-    var agent1 = new Agent(0, start1, end1);
-    var agent2 = new Agent(0, end2, end2);
+    var agent1 = new Agent(1, start1, end1);
+    var agent2 = new Agent(2, end2, end2);
 
     var startState = SearchState.MakeInitialState([agent1, agent2]);
 
@@ -393,7 +393,8 @@ describe('SearchState - Multi Agent, GetAdjacent', function() {
   it('Adjacent States from Intermediate', function() {
 
     var iState = startState.MakeNextState(a1, start2);
-    assert.strictEqual(iState.GetAdjacent().length, 3);
+    var adjacentStates = iState.GetAdjacent()
+    assert.strictEqual(adjacentStates.length, 2, adjacentStates.join('\n'));
   });
 });
 

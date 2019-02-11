@@ -83,6 +83,63 @@ describe('PathFinder Tests', function() {
   });
 });
 
+describe('PathFinder - FindMultiPath', function() {
+
+  it('FindMultiPath Basic Functionality', function() {
+    var pf = new Pathfinder();
+
+    let map33 = new Map(
+      [
+        [true, true, true],
+        [true, true, true],
+        [true, true, true]
+      ]
+    );
+
+    var agentList = 
+    [
+      new Agent(100, new Pos2D(0,0,map33), new Pos2D(0,2,map33)),
+      new Agent(101, new Pos2D(1,0,map33), new Pos2D(1,2,map33)),
+      new Agent(102, new Pos2D(2,0,map33), new Pos2D(2,2,map33))
+    ];
+    
+    var path = pf.FindMultiPath(agentList);
+
+    var pathString = '';
+    path.forEach( (k,v) => pathString = pathString.concat(`${k} - ${v.join('->')}\n`) );
+
+    assert.equal(pathString, 'TBD');
+  });
+
+  it('FindMultiPath Circular Pathing', function() {
+    var pf = new Pathfinder();
+
+    let map33 = new Map(
+      [
+        [true, true],
+        [true, true],
+      ]
+    );
+
+    var agentList = 
+    [
+      new Agent(100, new Pos2D(0,0,map33), new Pos2D(0,1,map33)),
+      new Agent(101, new Pos2D(1,0,map33), new Pos2D(1,1,map33)),
+      new Agent(102, new Pos2D(1,1,map33), new Pos2D(1,0,map33)),
+      new Agent(103, new Pos2D(0,1,map33), new Pos2D(0,0,map33))
+    ];
+    
+    var path = pf.FindMultiPath(agentList);
+
+    var pathString = '';
+    path.forEach( (k,v) => pathString = pathString.concat(`${k} - ${v.join('->')}\n`) );
+
+    assert.equal(pathString, 'TBD');
+  });
+
+
+});
+
 describe('SearchState - Single Agent, Generate Next State', function() {
 
   let map21 = new Map(
@@ -247,6 +304,14 @@ describe('SearchState - Single Agent, Equals', function() {
     var converged2 = altStart.MakeNextState(altAgent, middle);
 
     assert.isTrue(converged1.Equals(converged2));
+  });
+
+  it('Agents in differing locations', function() {
+
+    var altAgent = new Agent(0, end, end);
+    var altStart = SearchState.MakeInitialState([altAgent]);
+
+    assert.isFalse(startState.Equals(altStart));
   });
 });
 

@@ -1,5 +1,10 @@
 import { Dictionary } from 'typescript-collections';
-
+/**
+ * Maps both values for each key to the given function and returns an array of the results. Both Dictionaries ar expected to have the same set of keys.
+ * @param a Dictionary A
+ * @param b Dictionary B which must have the same type and keys as Dictionary A
+ * @param fn Each key and the two values it maps to are passed to this function
+ */
 export function DictionaryMap2ToArray<KeyType, ValueType, ResultType>(
     a:Dictionary<KeyType, ValueType>, 
     b:Dictionary<KeyType, ValueType>,

@@ -26,7 +26,7 @@ export class Agent
     return new Agent(this.id, target, this.destination);
   }
 
-  equals(other:Agent): boolean
+  idEquals(other:Agent): boolean
   {
     if (this.id === other.id)
     {
@@ -38,7 +38,25 @@ export class Agent
     }
     return false;
   }
+  deepEquals(other:Agent): boolean
+  {
+    if (this.id === other.id)
+    {
+      if (this.destination.Equals(other.destination) === false)
+      {
+        throw new Error('Encountered Agents with same id but different destinations');
+      }
+      else
+      {
+        return this.location.Equals(other.location);
+      }
+    }
+    return false;
+  }
 
+  /**
+   * toString method using only Agent ID, used so that the same agent in a different position gets mapped to the same key in the Dictionary type. Use verboseToString to get all fields.
+   */
   toString():string
   {
     return `Agent${this.id}`;
@@ -240,10 +258,18 @@ export class SearchState
     // Deep Equals, checks all fields for equality
     // AgentMoveList keys match all match using the Dictionary type's equality 
     // check for keys and strict equals for values 
+
+    var listA = (this.agentMoveList.keys() as Array<Agent>).sort();
+    var listB = (other.agentMoveList.keys() as Array<Agent>).sort();
+    let StatesHaveSameAgents:boolean = listA.map(
+      (agent, index) => agent.deepEquals(listB[index])
+    ).every((x)=>x);
+
     return this.timestep === other.timestep
       && this.state === other.state
+      && StatesHaveSameAgents
       && DictionaryMap2ToArray(this.agentMoveList, other.agentMoveList,
-        (_, va, vb) => va === vb
+        (_, va, vb) => va === vb || (va != null && vb != null && va.Equals(vb))
       ).every( (v) => v );
   }
 
@@ -306,6 +332,9 @@ export class Pathfinder
 
     } while (CurrentNode.Equals(endState) === false);
 
+    // DONE!
+    // Now parse out the results
+
     // Trace back from CurrentNode to find final path through the search space
     let Path:Array<SearchState> = new Array();
     let pathNode:SearchState|undefined = CurrentNode;
@@ -315,7 +344,7 @@ export class Pathfinder
       Path.push(pathNode);
       pathNode = ExploredNodes.getValue(pathNode);
 
-    } while (pathNode !== undefined && pathNode !== startState && ExploredNodes.containsKey(pathNode))
+    } while (pathNode !== undefined && ExploredNodes.containsKey(pathNode))
 
     // Filter out Intermediate states, they are not used in creating the final path
     var standardStateList = Path.filter( (s) => s.state === StateType.Standard ).reverse();
@@ -332,7 +361,7 @@ export class Pathfinder
       (s) => s.agentMoveList.forEach(
         (agent, _) => 
           // Test cases validate that consecutive SearchState instances have the same agent list
-          // making use of '!' here safe
+          // so use of '!' here is safe
           finalAgentPathMap.getValue(agent)!.push(agent.location)
       )
     );

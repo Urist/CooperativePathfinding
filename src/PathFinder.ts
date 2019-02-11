@@ -138,7 +138,7 @@ export class Pathfinder
       Path.push(pathNode);
       pathNode = ExploredNodes.getValue(pathNode);
 
-    } while (pathNode !== undefined && pathNode !== from && ExploredNodes.containsKey(pathNode))
+    } while (pathNode !== undefined && !pathNode.Equals(from) && ExploredNodes.containsKey(pathNode))
 
     return Path.reverse();
   }

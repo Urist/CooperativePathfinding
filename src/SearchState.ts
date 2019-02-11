@@ -58,7 +58,7 @@ export class SearchState
       var newAgentList:Dictionary<Agent, IPosition|null> = new Dictionary();
       // Set the moving agent's position
       newAgentList.setValue(
-        new Agent(movingAgent.id, move, movingAgent.destination),
+        movingAgent.moveTo(move),
         null
       );
       // Copy agents and update their positions
@@ -71,7 +71,7 @@ export class SearchState
             throw `Found null move for ${k} when generating Standard state`;
 
             newAgentList.setValue(
-              new Agent(k.id, v, k.destination),
+              k.moveTo(v),
               null
             );
           }

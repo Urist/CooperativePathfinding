@@ -1,4 +1,4 @@
-import { IPosition } from './PathFinder';
+import { IPosition } from './IPosition';
 
 export class Map
 {

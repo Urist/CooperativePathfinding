@@ -50,7 +50,7 @@ export class Pathfinder
         }
       );
 
-    } while (CurrentNode.Equals(endState) === false);
+    } while (CurrentNode.IsEqvivalent(endState) === false);
 
     // DONE!
     // Now parse out the results

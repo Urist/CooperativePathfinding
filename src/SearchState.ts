@@ -188,7 +188,11 @@ export class SearchState
 
   }
 
-  Equals(other:SearchState): boolean
+  /**
+   * Check if states are of the same type (Standard/Intermediate) and have the same agents in the same positions with the same planned moves.
+   * @param other SearchState to compare against
+   */
+  IsEqvivalent(other:SearchState): boolean
   {
     // Deep Equals, checks all fields for equality
     // AgentMoveList keys match all match using the Dictionary type's equality 
@@ -200,12 +204,21 @@ export class SearchState
       (agent, index) => agent.deepEquals(listB[index])
     ).every((x)=>x);
 
-    return this.timestep === other.timestep
-      && this.state === other.state
+    return this.state === other.state
       && StatesHaveSameAgents
       && DictionaryMap2ToArray(this.agentMoveList, other.agentMoveList,
         (_, va, vb) => va === vb || (va != null && vb != null && va.Equals(vb))
       ).every( (v) => v );
+  }
+
+  /**
+   * Like IsEquivalent but also checks that states took the same amount of time to reach the current position.
+   * @param other SearchState to compare against
+   */
+  IsIdentical(other:SearchState): boolean
+  {
+    return this.timestep === other.timestep
+      && this.IsEqvivalent(other);
   }
 
   toString(): string

@@ -86,6 +86,30 @@ describe('PathFinder Tests', function() {
 
 describe('PathFinder - FindMultiPath', function() {
 
+  it('FindMultiPath Trivial Functionality', function() {
+    var pf = new Pathfinder();
+
+    let map22 = new Map(
+      [
+        [true, true],
+        [true, false]
+      ]
+    );
+
+    var agentList = 
+    [
+      new Agent(100, new Pos2D(0,0,map22), new Pos2D(0,1,map22)),
+      new Agent(101, new Pos2D(1,0,map22), new Pos2D(1,0,map22))
+    ];
+    
+    var path = pf.FindMultiPath(agentList);
+
+    var pathString = '';
+    path.forEach( (k,v) => pathString = pathString.concat(`${k} - ${v.join('->')}\n`) );
+
+    assert.equal(pathString, 'Agent101 - (1,0)\nAgent100 - (0,1)\n');
+  });
+
   it('FindMultiPath Basic Functionality', function() {
     var pf = new Pathfinder();
 
@@ -109,7 +133,7 @@ describe('PathFinder - FindMultiPath', function() {
     var pathString = '';
     path.forEach( (k,v) => pathString = pathString.concat(`${k} - ${v.join('->')}\n`) );
 
-    assert.equal(pathString, 'TBD');
+    assert.equal(pathString, 'Agent102 - (2,1)->(2,2)\nAgent100 - (0,1)->(0,2)\nAgent101 - (1,1)->(1,2)\n');
   });
 
   it('FindMultiPath Circular Pathing', function() {
@@ -117,17 +141,16 @@ describe('PathFinder - FindMultiPath', function() {
 
     let map33 = new Map(
       [
-        [true, true],
+        [false, true],
         [true, true],
       ]
     );
 
     var agentList = 
     [
-      new Agent(100, new Pos2D(0,0,map33), new Pos2D(0,1,map33)),
       new Agent(101, new Pos2D(1,0,map33), new Pos2D(1,1,map33)),
-      new Agent(102, new Pos2D(1,1,map33), new Pos2D(1,0,map33)),
-      new Agent(103, new Pos2D(0,1,map33), new Pos2D(0,0,map33))
+      new Agent(102, new Pos2D(1,1,map33), new Pos2D(0,1,map33)),
+      new Agent(103, new Pos2D(0,1,map33), new Pos2D(1,0,map33))
     ];
     
     var path = pf.FindMultiPath(agentList);
@@ -135,7 +158,7 @@ describe('PathFinder - FindMultiPath', function() {
     var pathString = '';
     path.forEach( (k,v) => pathString = pathString.concat(`${k} - ${v.join('->')}\n`) );
 
-    assert.equal(pathString, 'TBD');
+    assert.equal(pathString, 'Agent102 - (0,1)\nAgent101 - (1,1)\nAgent103 - (1,0)\n');
   });
 
 

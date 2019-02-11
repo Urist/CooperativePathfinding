@@ -148,17 +148,17 @@ describe('SearchState - Single Agent, Generate Next State', function() {
     var startState = SearchState.MakeInitialState([agent]);
   
     it('Identity', function() {
-      assert.isTrue(startState.Equals(startState));
+      assert.isTrue(startState.IsIdentical(startState));
     });
   
     it('Equivalence', function() {
   
       var altStartState = SearchState.MakeInitialState([agent]);
   
-      assert.isTrue(startState.Equals(altStartState));
+      assert.isTrue(startState.IsIdentical(altStartState));
     });
   
-    it('Coverged states are equal', function() {
+    it('Coverged states are equivalent', function() {
   
       var converged1 = startState.MakeNextState(agent, middle);
   
@@ -166,7 +166,7 @@ describe('SearchState - Single Agent, Generate Next State', function() {
       var altStart = SearchState.MakeInitialState([altAgent]);
       var converged2 = altStart.MakeNextState(altAgent, middle);
   
-      assert.isTrue(converged1.Equals(converged2));
+      assert.isTrue(converged1.IsEqvivalent(converged2));
     });
   
     it('Agents in differing locations', function() {
@@ -174,7 +174,7 @@ describe('SearchState - Single Agent, Generate Next State', function() {
       var altAgent = new Agent(0, end, end);
       var altStart = SearchState.MakeInitialState([altAgent]);
   
-      assert.isFalse(startState.Equals(altStart));
+      assert.isFalse(startState.IsEqvivalent(altStart));
     });
   });
   
@@ -349,25 +349,34 @@ describe('SearchState - Single Agent, Generate Next State', function() {
     var startState = SearchState.MakeInitialState(aList);
   
     it('Identity', function() {
-      assert.isTrue(startState.Equals(startState));
+      assert.isTrue(startState.IsIdentical(startState));
     });
   
     it('Equivalence', function() {
   
       var altStartState = SearchState.MakeInitialState(aList);
   
-      assert.isTrue(startState.Equals(altStartState));
+      assert.isTrue(startState.IsIdentical(altStartState));
     });
   
     it('Coverged states are equal', function() {
   
-      var converged1 = startState.MakeNextState(a2, end2);
+      var altAgent = new Agent(a2.id, end1, end2);
+      var altStart = SearchState.MakeInitialState([a1, altAgent]);
+      var intermediate2 = altStart.MakeNextState(a1, start1);
+      var converged2 = intermediate2.MakeNextState(altAgent, start2);
+  
+      assert.isTrue(startState.IsEqvivalent(converged2));
+    });
+
+    it('Coverged states are not identical', function() {
   
       var altAgent = new Agent(a2.id, end1, end2);
       var altStart = SearchState.MakeInitialState([a1, altAgent]);
-      var converged2 = altStart.MakeNextState(altAgent, end2);
+      var intermediate2 = altStart.MakeNextState(a1, start1);
+      var converged2 = intermediate2.MakeNextState(altAgent, start2);
   
-      assert.isTrue(converged1.Equals(converged2));
+      assert.isFalse(startState.IsIdentical(converged2));
     });
   });
   

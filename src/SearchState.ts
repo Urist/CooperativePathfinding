@@ -140,17 +140,19 @@ export class SearchState
         // If neither agent has a moved assigned, anything is allowed
         if (otherMove !== null)
         {
-          // Test if moves would swap or cross
-          if (testMove.Intersection([testAgent.location, testMove], [otherAgent.location, otherMove]))
+          if (
+              // Test if both trying to move into the same space
+              testMove.Equals(otherMove)
+              ||
+              // Test if moves would swap or cross
+              (testMove.Intersection([testAgent.location, testMove], [otherAgent.location, otherMove]))
+              ||
+              // Moving into the space occupied by an agent that is 'wait'ing is also not allowed
+              (testMove.Equals(otherAgent.location) && otherAgent.location.Equals(otherMove))
+            )
           {
             isCollidingMove = true;
-            return false;
-          }
-          // Moving into the space occupied by an agent that is 'wait'ing is not allowed
-          if (testMove.Equals(otherAgent.location) && otherAgent.location.Equals(otherMove))
-          {
-            isCollidingMove = true;
-            return false;
+            return false;  // break out of forEach function
           }
         }
       }
@@ -223,11 +225,11 @@ export class SearchState
 
   toString(): string
   {
-    let agentString:string[] = this.agentMoveList.keys().map(
+    let agentString:string[] = this.agentMoveList.keys().sort().map(
       (k) => `${k.verboseToString()} => ${this.agentMoveList.getValue(k)}`
     );
 
-    return `{${this.timestep}, ${this.state}, (${agentString.join('), (')})}`;
+    return `{${this.state}, (${agentString.join('), (')})}`;
   }
 
 }

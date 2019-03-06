@@ -161,20 +161,44 @@ describe('PathFinder - FindMultiPath', function() {
     assert.equal(pathString, 'Agent102 - (0,1)\nAgent101 - (1,1)\nAgent103 - (1,0)\n');
   });
 
-  it('FindMultiPath Blocked Agent', function() {
+  it('FindMultiPath Impossible Path', function() {
     var pf = new Pathfinder();
 
     let map = new Map(
       [
-        [true, false, false, false],
-        [true, true, true, true]
+        [true, false, false],
+        [true, false, true]
       ]
     );
 
     var agentList = 
     [
-      new Agent(101, new Pos2D(1,1,map), new Pos2D(3,1,map)),
-      new Agent(102, new Pos2D(2,1,map), new Pos2D(0,1,map))
+      new Agent(101, new Pos2D(0,0,map,true), new Pos2D(0,2,map,true)),
+      new Agent(102, new Pos2D(1,2,map,true), new Pos2D(0,0,map,true))
+    ];
+    
+    try {
+      var path = pf.FindMultiPath(agentList);
+    } catch (error) {
+      return;
+    }
+    assert.fail('No error thrown from issposible path');
+  });
+
+  it('FindMultiPath Blocked Agent', function() {
+    var pf = new Pathfinder();
+
+    let map = new Map(
+      [
+        [true, false, false],
+        [true, true, true]
+      ]
+    );
+
+    var agentList = 
+    [
+      new Agent(101, new Pos2D(1,1,map), new Pos2D(1,2,map)),
+      new Agent(102, new Pos2D(1,2,map), new Pos2D(1,0,map))
     ];
     
     var path = pf.FindMultiPath(agentList);
@@ -182,7 +206,7 @@ describe('PathFinder - FindMultiPath', function() {
     var pathString = '';
     path.forEach( (k,v) => pathString = pathString.concat(`${k} - ${v.join('->')}\n`) );
 
-    assert.equal(pathString, 'TBD');
+    assert.equal(pathString, 'Agent101 - (0,0)->(1,1)->(1,2)->(1,2)\nAgent102 - (1,1)->(1,0)->(0,0)->(1,0)\n');
   });
 
   it('FindMultiPath Dodging Agent', function() {
@@ -190,18 +214,17 @@ describe('PathFinder - FindMultiPath', function() {
 
     let map = new Map(
       [
-        [true, false, true, true, true],
-        [false, true, false, false, false],
-        [true, false, false, false, false],
-        [false, true, true, true, false]
+        [true, false, true],
+        [false, true, false],
+        [true, false, true]
       ]
     );
 
     var agentList = 
     [
       new Agent(900, new Pos2D(1,1,map), new Pos2D(1,1,map)),
-      new Agent(101, new Pos2D(1,3,map), new Pos2D(4,0,map)),
-      new Agent(102, new Pos2D(3,3,map), new Pos2D(3,0,map))
+      new Agent(101, new Pos2D(2,0,map), new Pos2D(0,2,map)),
+      new Agent(102, new Pos2D(2,2,map), new Pos2D(0,0,map))
     ];
     
     var path = pf.FindMultiPath(agentList);
@@ -209,7 +232,7 @@ describe('PathFinder - FindMultiPath', function() {
     var pathString = '';
     path.forEach( (k,v) => pathString = pathString.concat(`${k} - ${v.join('->')}\n`) );
 
-    assert.equal(pathString, 'TBD');
+    assert.equal(pathString, 'Agent900 - (0,0)->(1,1)->(0,0)->(1,1)\nAgent101 - (1,1)->(0,2)->(0,2)->(0,2)\nAgent102 - (2,2)->(2,2)->(1,1)->(0,0)\n');
   });
 
 });

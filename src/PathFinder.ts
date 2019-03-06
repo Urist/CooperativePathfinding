@@ -30,7 +30,7 @@ export class Pathfinder
       // If there are no more nodes to explore, fail to find a path
       if (UnexploredNodes.length === 0)
       {
-        throw `No path from ${startState} to ${endState}`;        
+        throw Error(`No path from ${startState} to ${endState}`);
       }
 
       // Get next node to explore
@@ -64,7 +64,7 @@ export class Pathfinder
       Path.push(pathNode);
       pathNode = ExploredNodes.getValue(pathNode);
 
-    } while (pathNode !== undefined && ExploredNodes.containsKey(pathNode))
+    } while (pathNode !== undefined && !pathNode.IsIdentical(startState) && ExploredNodes.containsKey(pathNode))
 
     // Filter out Intermediate states, they are not used in creating the final path
     var standardStateList = Path.filter( (s) => s.state === StateType.Standard ).reverse();

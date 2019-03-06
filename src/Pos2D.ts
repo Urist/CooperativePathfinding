@@ -7,7 +7,12 @@ export class Map
 
 export class Pos2D implements IPosition
 {
-    constructor( readonly x:number, readonly y:number, readonly map:Map ) {}
+    constructor( readonly x:number, readonly y:number, readonly map:Map, validate:boolean = true )
+    {
+        if ( validate && (x >= map.m.length || y >= map.m[0].length) ) {
+            throw Error('Pos2D initialized outside given map');
+        }
+    }
 
     GetHeuristicDistance(to:Pos2D): number
     {
@@ -19,15 +24,15 @@ export class Pos2D implements IPosition
         var adj = new Array();
 
         // Don't bother bounds checking at first, the filter below will remove invalid entries
-        adj.push(new Pos2D(this.x - 1, this.y - 1, this.map));
-        adj.push(new Pos2D(this.x - 1, this.y, this.map));
-        adj.push(new Pos2D(this.x - 1, this.y + 1, this.map));
-        adj.push(new Pos2D(this.x, this.y - 1, this.map));
-        adj.push(new Pos2D(this.x, this.y, this.map));
-        adj.push(new Pos2D(this.x, this.y + 1, this.map));
-        adj.push(new Pos2D(this.x + 1, this.y - 1, this.map));
-        adj.push(new Pos2D(this.x + 1, this.y, this.map));
-        adj.push(new Pos2D(this.x + 1, this.y + 1, this.map));
+        adj.push(new Pos2D(this.x - 1, this.y - 1, this.map, false));
+        adj.push(new Pos2D(this.x - 1, this.y, this.map, false));
+        adj.push(new Pos2D(this.x - 1, this.y + 1, this.map, false));
+        adj.push(new Pos2D(this.x, this.y - 1, this.map, false));
+        adj.push(new Pos2D(this.x, this.y, this.map, false));
+        adj.push(new Pos2D(this.x, this.y + 1, this.map, false));
+        adj.push(new Pos2D(this.x + 1, this.y - 1, this.map, false));
+        adj.push(new Pos2D(this.x + 1, this.y, this.map, false));
+        adj.push(new Pos2D(this.x + 1, this.y + 1, this.map, false));
 
         // Remove entries that are blocked or outside the bounds
         adj = adj.filter( (p:Pos2D) => this.map.m[p.x] && this.map.m[p.x][p.y] );

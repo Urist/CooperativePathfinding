@@ -210,6 +210,7 @@ describe('PathFinder - FindMultiPath', function() {
   });
 
   it('FindMultiPath Dodging Agent', function() {
+
     var pf = new Pathfinder();
 
     let map = new Map(
@@ -235,4 +236,87 @@ describe('PathFinder - FindMultiPath', function() {
     assert.equal(pathString, 'Agent900 - (0,0)->(1,1)->(0,0)->(1,1)\nAgent101 - (1,1)->(0,2)->(0,2)->(0,2)\nAgent102 - (2,2)->(2,2)->(1,1)->(0,0)\n');
   });
 
+  it('FindMultiPath Big Test', function() {
+    this.timeout(30_000);
+
+    var pf = new Pathfinder();
+
+    // 18x6
+    let map = new Map(
+      [
+        [true, false, true, false, true, false, true, false, true, true, true, true, false, true, false, true, false, true],
+        [true, true, true, true, true, false, true, false, true, true, false, true, false, true, false, true, false, true],
+        [true, false, false, false, true, false, true, false, true, true, false, true, false, true, false, true, false, true],
+        [true, false, true, true, false, false, true, false, true, true, false, true, false, true, true, true, false, true],
+        [true, false, true, false, false, true, true, false, true, true, false, true, false, true, false, true, false, true],
+        [true, false, false, true, true, false, true, true, true, true, false, true, true, true, false, true, true, true],
+      ]
+    );
+
+    var agentList = new Array<Agent>();
+
+    for (let index = 0; index < 2; index++) {
+      var left = new Pos2D(index, 0, map);
+      var right = new Pos2D(5 - index, 17, map);
+      agentList.push(new Agent(300+index, left, right));
+      agentList.push(new Agent(600+index, right, left));
+    }
+    
+    var path = pf.FindMultiPath(agentList);
+
+    var pathString = '';
+    path.forEach( (k,v) => pathString = pathString.concat(`${k} - ${v.join('->')}\n`) );
+
+    assert.isTrue(true, 'if it finishes, it\'s good enough');
+  });
+  
+  it('FindMultiPath Huge Test', function() {
+    var pf = new Pathfinder();
+
+    // 18x23
+    let map = new Map(
+      [
+        [true, false, true, false, true, true, true, false, true, true, false, true, false, true, false, true, false, true],
+        [true, false, true, true, true, false, true, false, true, true, false, true, false, true, false, true, false, true],
+        [true, false, true, false, true, false, true, false, true, true, false, true, false, true, false, true, false, true],
+        [true, true, true, false, false, false, true, false, true, true, false, true, false, true, true, true, false, true],
+        [true, false, true, false, true, false, true, false, true, true, false, true, false, true, false, true, false, true],
+        [true, false, false, false, true, false, true, false, true, true, false, true, true, true, false, true, false, true],
+        [true, false, true, false, true, false, true, false, true, true, false, true, false, true, false, true, false, true],
+        [true, false, true, false, true, false, true, true, true, true, false, true, false, true, false, true, false, true],
+        [true, true, true, false, true, false, true, false, true, true, false, true, false, true, false, true, false, true],
+        [true, false, true, false, true, false, true, false, true, true, false, true, false, true, false, true, false, true],
+        [true, false, true, false, true, false, true, false, true, true, false, true, false, true, false, true, false, true],
+        [true, false, true, false, true, false, true, false, true, true, false, true, false, true, false, true, false, true],
+        [true, false, true, false, true, true, true, false, true, true, false, true, false, true, false, true, false, true],
+        [true, false, true, false, true, false, true, false, true, true, false, true, false, true, false, true, true, true],
+        [true, false, true, false, false, false, true, false, true, true, false, true, false, true, false, true, false, true],
+        [true, false, true, true, true, false, true, false, true, true, false, true, false, false, false, false, false, true],
+        [true, false, true, false, true, false, false, false, true, true, true, true, false, true, false, true, false, true],
+        [true, false, true, false, true, false, true, false, true, true, true, true, false, true, true, true, false, true],
+        [true, false, true, false, true, false, true, false, true, true, false, true, false, true, false, true, false, true],
+        [true, false, true, true, true, false, true, false, true, true, false, true, false, true, false, true, false, true],
+        [true, false, true, false, true, false, true, false, true, true, false, true, false, true, false, true, false, true],
+        [true, false, true, false, true, false, true, false, true, true, false, true, false, true, false, true, false, true],
+        [true, false, true, false, true, false, true, false, true, true, false, true, false, true, false, true, false, true],
+        [true, false, true, false, true, false, true, true, true, true, false, true, false, true, false, true, true, true],
+      ]
+    );
+
+    var agentList = new Array<Agent>();
+
+    for (let index = 0; index < 1; index++) {
+      var left = new Pos2D(index, 0, map);
+      var right = new Pos2D(22 - index, 17, map);
+      agentList.push(new Agent(300+index, left, right));
+      agentList.push(new Agent(600+index, right, left));
+    }
+    
+    var path = pf.FindMultiPath(agentList);
+
+    var pathString = '';
+    path.forEach( (k,v) => pathString = pathString.concat(`${k} - ${v.join('->')}\n`) );
+
+    assert.isTrue(true, 'if it finishes, it\'s good enough');
+  });
 });

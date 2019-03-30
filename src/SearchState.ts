@@ -12,12 +12,16 @@ export enum StateType
 // Exported for testing purposes
 export class SearchState
 {
+  private readonly heuristicDistance:number;
+
   // SearchState class is immutable
   private constructor(
 		readonly timestep:number,
 		readonly state:StateType,
-		readonly agentMoveList:Dictionary<Agent, IPosition|null>
-  ) {}
+    readonly agentMoveList:Dictionary<Agent, IPosition|null>
+  ) {
+    this.heuristicDistance = this._getHeuristicDistance();
+  }
 
   static MakeInitialState(agentList:Array<Agent>)
   {
@@ -110,6 +114,11 @@ export class SearchState
   }
 
   GetHeuristicDistance(): number
+  {
+    return this.heuristicDistance;
+  }
+
+  private _getHeuristicDistance(): number
   {
     let HeuristicValue:number = 0;
 

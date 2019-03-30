@@ -5,11 +5,14 @@ export class PriorityQueue<T>
     private _elements:number;
     private _comparator:(a:T,b:T) => boolean;
 
+    private _freelist:number[];
+
     constructor (comparator = (a:T, b:T) => a >= b)
     {
         this._data = [];
         this._elements = 0;
         this._comparator = comparator;
+        this._freelist = [];
     }
 
     get length():number
@@ -19,18 +22,17 @@ export class PriorityQueue<T>
 
     Insert (newElement:T)
     {
-        // Default to a new position, we be updated if an empty spoty is found
-        let newPosition:number = this._data.length;
-        
-        // Find a spot
-        for (var pos = 0; pos < this._data.length; pos++)
-        {
-            if (this._data[pos] == null) // checks null and undefined :)
-            {
-                this._data[pos] = newElement;
-                newPosition = pos;
-                break;
-            }
+        let newPosition:number;
+
+        // Try to get the most recently opened slot
+        let freePos:number|undefined = this._freelist.pop();
+        // If the freelist didn't know about any open slots, then create a new slot at the end
+        // Note: I was tempted to use "freePos || _data.length", however that fails because
+        // the freelist can return 0 as an open slot which is a falsy value and thus does not get used
+        if (freePos !== undefined) {
+            newPosition = freePos;
+        } else {
+            newPosition = this._data.length;
         }
 
         // Add the new item
@@ -106,6 +108,7 @@ export class PriorityQueue<T>
                 }
             }
         }
+        this._freelist.push(pos);
         this._elements--;
         return returnElement;
     }

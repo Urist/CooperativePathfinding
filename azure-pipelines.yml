@@ -23,12 +23,17 @@ jobs:
       npm run build
     displayName: 'npm install and build'
 
-- job: Test
-  dependsOn: Build
-  pool:
-    vmImage: 'ubuntu-latest'
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: $(Build.ArtifactStagingDirectory)/lib/
+      ArtifactName: jsLibFiles
 
-  steps:
+#- job: Test
+#  dependsOn: Build
+#  pool:
+#    vmImage: 'ubuntu-latest'
+
+#  steps:
   - script: |
       npm test
     displayName: 'Run mocha tests'

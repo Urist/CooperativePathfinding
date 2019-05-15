@@ -23,10 +23,10 @@ jobs:
       npm run build
     displayName: 'npm install and build'
 
-  - task: PublishBuildArtifacts@1
-    inputs:
-      PathtoPublish: $(Build.ArtifactStagingDirectory)/lib/
-      ArtifactName: jsLibFiles
+#  - task: PublishBuildArtifacts@1
+#    inputs:
+#      PathtoPublish: $(Build.ArtifactStagingDirectory)/lib/
+#      ArtifactName: jsLibFiles
 
 #- job: Test
 #  dependsOn: Build

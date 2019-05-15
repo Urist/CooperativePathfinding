@@ -29,6 +29,7 @@ jobs:
     displayName: 'Run mocha tests'
 
   - task: PublishTestResults@2
+    condition: succeededOrFailed()
     inputs:
       testResultsFormat: 'JUnit'
       testResultsFiles: '**/TEST-*.xml'

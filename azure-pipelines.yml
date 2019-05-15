@@ -32,4 +32,4 @@ jobs:
     condition: succeededOrFailed()
     inputs:
       testResultsFormat: 'JUnit'
-      testResultsFiles: '**/TEST-*.xml'
+      testResultsFiles: './test-results.xml'

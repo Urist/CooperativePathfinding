@@ -209,6 +209,30 @@ describe('PathFinder - FindMultiPath', function() {
     assert.equal(pathString, 'Agent101 - (0,0)->(1,1)->(1,2)->(1,2)\nAgent102 - (1,1)->(1,0)->(0,0)->(1,0)\n');
   });
 
+  it('FindMultiPath Unforced Wait', function() {
+    var pf = new Pathfinder();
+
+    let map = new Map(
+      [
+        [false, true],
+        [true, true]
+      ]
+    );
+
+    var agentList = 
+    [
+      new Agent(102, new Pos2D(1,0,map), new Pos2D(1,1,map)),
+      new Agent(103, new Pos2D(0,1,map), new Pos2D(0,1,map)),
+    ];
+    
+    var path = pf.FindMultiPath(agentList);
+
+    var pathString = '';
+    path.forEach( (k,v) => pathString = pathString.concat(`${k} - ${v.join('->')}\n`) );
+
+    assert.equal(pathString, 'Agent103 - (0,1)\nAgent102 - (1,1)\n');
+  });
+
   it('FindMultiPath Forced Wait', function() {
     var pf = new Pathfinder();
 

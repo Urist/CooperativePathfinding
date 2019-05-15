@@ -147,7 +147,8 @@ export class SearchState
       (otherAgent, otherMove) =>
       {
         // If neither agent has a moved assigned, anything is allowed
-        if (otherMove !== null)
+        // Also an agent can't collide with itself
+        if (otherMove !== null && !testAgent.idEquals(otherAgent))
         {
           if (
               // Test if both trying to move into the same space

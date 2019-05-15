@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "nyc --reporter=lcov mocha --timeout=3000 --prof ./lib/test/",
-    "build": "tsc"
+    "build": "tsc",
+    "test": "mocha --timeout=3000 --exit ./lib/test/",
+    "profile": "nyc --reporter=lcov mocha --timeout=3000 --prof ./lib/test/"
   },
   "author": "",
   "dependencies": {

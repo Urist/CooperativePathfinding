@@ -25,7 +25,7 @@ jobs:
 
   # RublishTestResults needs a format it can understand, junit is the easiest
   - script: |
-      npm junit-test
+      npm run junit-test
     displayName: 'Run mocha tests'
 
   - task: PublishTestResults@2

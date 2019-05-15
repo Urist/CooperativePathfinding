@@ -23,17 +23,12 @@ jobs:
       npm run build
     displayName: 'npm install and build'
 
-#  - task: PublishBuildArtifacts@1
-#    inputs:
-#      PathtoPublish: $(Build.ArtifactStagingDirectory)/lib/
-#      ArtifactName: jsLibFiles
-
-#- job: Test
-#  dependsOn: Build
-#  pool:
-#    vmImage: 'ubuntu-latest'
-
-#  steps:
+  # RublishTestResults needs a format it can understand, junit is the easiest
   - script: |
-      npm test
+      npm junit-test
     displayName: 'Run mocha tests'
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '**/TEST-*.xml'

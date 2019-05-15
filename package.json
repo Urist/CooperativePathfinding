@@ -4,8 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "nyc --reporter=lcov mocha --timeout=3000 --prof ./lib/test/",
-    "build": "tsc"
+    "build": "tsc",
+    "test": "mocha --timeout=3000 --exit ./lib/test/",
+    "junit-test": "mocha --timeout=3000 --reporter mocha-junit-reporter --exit ./lib/test/",
+    "profile": "nyc --reporter=lcov mocha --timeout=3000 --prof ./lib/test/"
   },
   "author": "",
   "dependencies": {
@@ -19,6 +21,7 @@
     "gulp": "^4.0.0",
     "gulp-typescript": "^3.2.3",
     "mocha": "^4.0.1",
+    "mocha-junit-reporter": "^1.22.0",
     "mochawesome": "^2.3.1",
     "nyc": "^13.3.0",
     "typescript-collections": "^1.3.2"

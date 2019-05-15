@@ -6,6 +6,7 @@
   "scripts": {
     "build": "tsc",
     "test": "mocha --timeout=3000 --exit ./lib/test/",
+    "junit-test": "mocha --timeout=3000 --reporter mocha-junit-reporter --exit ./lib/test/",
     "profile": "nyc --reporter=lcov mocha --timeout=3000 --prof ./lib/test/"
   },
   "author": "",

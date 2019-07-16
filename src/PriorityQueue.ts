@@ -3,11 +3,11 @@ export class PriorityQueue<T>
 {
     private _data:(T)[];
     private _elements:number;
-    private _comparator:(a:T,b:T) => boolean;
+    private _comparator:(a:T,b:T) => number;
 
     private _freelist:number[];
 
-    constructor (comparator = (a:T, b:T) => a >= b)
+    constructor (comparator:(a:T, b:T) => number)
     {
         this._data = [];
         this._elements = 0;
@@ -38,22 +38,9 @@ export class PriorityQueue<T>
         // Add the new item
         this._data[newPosition] = newElement;
 
-        // Heapify up
-        var parentPos = this._parent(newPosition);
-        var currentPos = newPosition;
-        while (parentPos !== undefined)
-        {
-            if (!this._comparator(this._data[parentPos], this._data[currentPos]))
-            {
-                this._sawp(parentPos, currentPos);
-            }
-            else
-            {
-                break;
-            }
-            currentPos = parentPos;
-            parentPos = this._parent(currentPos);
-        }
+        this._heapifyUp(newPosition);
+        this._heapifyDown(0);
+
         this._elements++;
     }
 
@@ -68,7 +55,33 @@ export class PriorityQueue<T>
         delete this._data[0];
         var pos = 0;
 
-        // Heapify down
+        pos = this._heapifyDown(0);
+
+        this._freelist.push(pos);
+        this._elements--;
+        return returnElement;
+    }
+
+    private _heapifyUp(start:number) {
+        var parentPos = this._parent(start);
+        var currentPos = start;
+        while (parentPos !== undefined)
+        {
+            if (this._comparator(this._data[parentPos], this._data[currentPos]) < 0 )
+            {
+                this._sawp(parentPos, currentPos);
+            }
+            else
+            {
+                break;
+            }
+            currentPos = parentPos;
+            parentPos = this._parent(currentPos);
+        }
+    }
+
+    private _heapifyDown (start:number):number {
+        var pos = start;
         while (true)
         {
             var lv = this._leftVal(pos);
@@ -83,20 +96,38 @@ export class PriorityQueue<T>
             }
             else if (rv !== undefined && lv === undefined)
             {
-                // Right exists, move it up and check for children
-                this._sawp(pos, rp);
-                pos = rp;
+                // Right exists, should it be moved up?
+                if (this._val(pos) == null || this._val(pos) < rv)
+                {
+                    // Move it up and check for children
+                    this._sawp(pos, rp);
+                    pos = rp;
+                }
+                else
+                {
+                    // If not, we're done!
+                    break;
+                }
             }
             else if (rv === undefined && lv !== undefined)
             {
-                // Left exists, move it up and check for children
-                this._sawp(pos, lp);
-                pos = lp;
+                // Left exists, should it be moved up?
+                if (this._val(pos) == null || this._val(pos) < lv)
+                {
+                    // Move it up and check for children
+                    this._sawp(pos, lp);
+                    pos = lp;
+                }
+                else
+                {
+                    // If not, we're done!
+                    break;
+                }
             }
             else 
             {
                 // Left and right both exist, choose one to move up then check it's children
-                if (!this._comparator(lv, rv))
+                if (this._comparator(lv, rv) )
                 {
                     this._sawp(pos, rp);
                     pos = rp;
@@ -108,9 +139,7 @@ export class PriorityQueue<T>
                 }
             }
         }
-        this._freelist.push(pos);
-        this._elements--;
-        return returnElement;
+        return pos;
     }
 
     // Helpers
